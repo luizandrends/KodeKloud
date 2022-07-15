@@ -8,7 +8,33 @@ kubectl run <podname> --image <imagename>
 
 Linha de comando responsável por criar um pod com uma imagem existente em algum registry de container.
 
+- Caso não seja informado a namespace ``-n <namespacename>`` o kubectl irá criar dentro da namespace default
+
 ----
+```
+kubectl run <podname> --image=<imagename> --dry-run=client -o yaml
+
+```
+Linha de comando responsável por gerar o manifesto em YAML.
+
+- Caso não seja informada a flag ``--namespace=<namespacename>`` o kubectl irá gerar o manifesto dentro da namespace default.
+
+- A flag ``--dry-run=client`` garante que nada seja criado, somente mostra o output do manifesto gerado.
+
+---
+
+```
+kubectl run <podname> --image=<podname> --dry-run=client -o yaml > <filename>.yaml
+```
+- Caso não seja informada a flag ``--namespace=<namespacename>`` o kubectl irá gerar o manifesto dentro da namespace default.
+
+- A flag ``--dry-run=client`` garante que nada seja criado, somente mostra o output do manifesto gerado.
+
+- O operador de ``>`` representa o caminho da criação de um arquivo. Neste caso estamos recebendo um output de uma flag ``--dry-run=client`` e salvando em um arquivo .yaml
+
+  Assim podemos rodar um ``kubectl apply -f <filename>.yaml``
+---
+
 ```
 kubectl delete pod <podname>
 ```
@@ -82,7 +108,7 @@ Linha de comando responsável pelo update do arquivo yaml
 ---
 ```
 kubectl scale --replicas=<numReplicas> -f <replicasetfile>
-````
+```
 
 Linha de comando responsável por fazer o scale ou down scale para um número específico de pods desejados.
 
@@ -108,5 +134,70 @@ kubectl edit replicaset <replicasetName>
 Linha de comando responsável por fazer o edit de um manifesto já gerado em um replicaset.
 
 - Caso ocorra algum tipo de deploy e o arquivo yaml for executado com um número diferente de pods ou imagem diferente esse comando não altera permanentemente o "manifesto final".
+
+- Caso não seja informado a namespace ``-n <namespacename>`` o kubectl irá buscar dentro da namespace default
+
+---
+
+## Deployments
+
+```
+kubectl get deployments
+```
+
+Linha de comando que lista todos os deployments
+
+- Caso não seja informado a namespace ``-n <namespacename>`` o kubectl irá buscar dentro da namespace default
+
+---
+
+```
+kubectl create deployment <deploymentname> --image=<imagename> --replicas=<numreplicas>
+```
+
+Linha de comando responsável por criar um deployment
+
+- Caso não seja informado a namespace ``-n <namespacename>`` o kubectl irá buscar dentro da namespace default
+
+---
+```
+kubectl create deployment <deploymentname> --image=<imagename> --replicas=<numreplicas> --dry-run=client -o yaml
+```
+
+Linha de comando responsável por gerar o manifesto YAML de criação de um deployment
+
+- Caso não seja informado a namespace ``-n <namespacename>`` o kubectl irá gerar o manifesto dentro da namespace default.
+
+- A flag ``--dry-run=client`` garante que nada seja criado, somente mostra o output do manifesto gerado.
+
+---
+
+```
+kubectl create deployment <deploymentname> --image=<imagename> --replicas=<numreplicas> 
+--namespace=<namespacename>
+--dry-run=client -o yaml > <filename>.yaml
+```
+
+Linha de comando responsável por gerar o manifesto YAML de criação de um deployment
+
+- Caso não seja informado o nome da namespace na flag ``--namespace=<namespacename>`` O deployment vai gerar o manifesto na namespace default.
+
+- A flag ``--dry-run=client`` garante que nada seja criado, somente mostra o output do manifesto gerado.
+
+- O operador de ``>`` representa o caminho da criação de um arquivo. Neste caso estamos recebendo um output de uma flag ``--dry-run=client`` e salvando em um arquivo .yaml
+
+  Assim podemos rodar um ``kubectl apply -f <filename>.yaml``
+
+
+
+---
+
+## Genneral
+
+```
+kubectl get all
+```
+
+Linha de comando responsável pela listagem de todos os componentes
 
 - Caso não seja informado a namespace ``-n <namespacename>`` o kubectl irá buscar dentro da namespace default
