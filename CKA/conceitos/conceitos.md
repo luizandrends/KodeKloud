@@ -77,6 +77,13 @@ Componente da camada de gerenciamento que executa os processos de controlador.
 
 - <strong>Replication-Controller:</strong> Responsável por garantir que o numero de containers desejados estejam disponíveis.
 
+  Em um cenário onde temos um pod somente rodando (single pod) o Replication-Controller vai garantir que esse pod sempre esteja rodando, ou seja, caso o pod venha a ficar indisponível, ele cria um novo automaticamente.
+
+  É importante ressaltar que o Replication-Controller vai atuar em multiplos Worker-Nodes, criando pods em nós diferentes.
+
+
+    ![alt text](./images/replication-controller.png)
+
 - <strong>Job-Controller:</strong> Observa os objetos Job que representam tarefas únicas e, em seguida, cria pods para executar essas tarefas até a conclusão.
 
 - <strong>Endpoint-Controller:</strong> Preenche o objeto Endpoints (ou seja, junta os Serviços e os pods).
