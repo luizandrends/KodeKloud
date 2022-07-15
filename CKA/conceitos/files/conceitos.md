@@ -25,3 +25,7 @@
 
    - *NodePort:* Porta a ser exposta para receber trafego. O range dessa porta precisa ser entre 30000 - 32767
 
+  Como podemos perceber o campo ports é um array, logo, podemos ter mais de uma configuração.
+
+  É importante ressaltar que o objeto de referência (POD, Deployment, ReplicaSet e etc...) tenha as labels definidas para conseguirmos fazer o attatch do serviço.
+

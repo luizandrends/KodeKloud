@@ -17,6 +17,3 @@ spec:
       - name: nginx-container
         image: nginx
   replicas: 3
-
-  ## Gerencia não somente os pods pertencentes ao
-  ## replication controller e sim todos os pods rodando
