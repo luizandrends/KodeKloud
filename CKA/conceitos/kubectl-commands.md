@@ -101,8 +101,9 @@ Linha de comando responsável por fazer o scale ou down scale para um número es
 
 - Caso não seja informado a namespace ``-n <namespacename>`` o kubectl irá buscar dentro da namespace default
 ---
-
+```
 kubectl edit replicaset <replicasetName>
+```
 
 Linha de comando responsável por fazer o edit de um manifesto já gerado em um replicaset.
 
