@@ -192,6 +192,16 @@ Linha de comando responsável por gerar o manifesto YAML de criação de um depl
 
 ---
 
+## Services
+
+```
+kubectl get services
+```
+
+Linha de comando responsável pela listagem de todos os services
+
+___
+
 ## Genneral
 
 ```

@@ -144,6 +144,33 @@ Depois que as instâncias do aplicativo são criadas, um Controlador do Kubernet
 
 Em um mundo de pré-orquestração, os scripts de instalação costumavam ser usados ​​para iniciar aplicativos, mas não permitiam a recuperação de falha da máquina. Ao criar suas instâncias de aplicativo e mantê-las em execução entre nós, as implantações do Kubernetes fornecem uma abordagem fundamentalmente diferente para o gerenciamento de aplicativos.
 
+- É importante ressaltar que quando criamos um deployment é tambem criado um replicaset no formato ``myapp-deoployment-<deploymentid>-<replicasetid>``.
+O responsável pela criação dos pods neste caso é o replicaset.
+
+---
+
+## Services
+
+Pods Kubernetes são efêmeros. Na verdade, Pods possuem um ciclo de vida. Quando um nó de processamento morre, os Pods executados no nó também são perdidos. A partir disso, o ReplicaSet pode dinamicamente retornar o cluster ao estado desejado através da criação de novos Pods para manter sua aplicação em execução. Como outro exemplo, considere um backend de processamento de imagens com 3 réplicas. Estas réplicas são intercambiáveis; o sistema front-end não deveria se importar com as réplicas backend ou ainda se um Pod é perdido ou recriado. Dito isso, cada Pod em um cluster Kubernetes tem um único endereço IP, mesmo Pods no mesmo nó, então há necessidade de ter uma forma de reconciliar automaticamente mudanças entre Pods de modo que sua aplicação continue funcionando.
+
+Um serviço no Kubernetes é uma abstração que define um conjunto lógico de Pods e uma política pela qual acessá-los. Serviços permitem um baixo acoplamento entre os Pods dependentes. Um serviço é definido usando YAML (preferencialmente) ou JSON, como todos objetos Kubernetes. O conjunto de Pods selecionados por um Serviço é geralmente determinado por um seletor de rótulos LabelSelector (veja abaixo o motivo pelo qual você pode querer um Serviço sem incluir um seletor selector na especificação spec).
+
+Embora cada Pod tenha um endereço IP único, estes IPs não são expostos externamente ao cluster sem um Serviço. Serviços permitem que suas aplicações recebam tráfego. Serviços podem ser expostos de formas diferentes especificando um tipo type na especificação do serviço ServiceSpec:
+
+- ClusterIP (padrão) - Expõe o serviço sob um endereço IP interno no cluster. Este tipo faz do serviço somente alcançável de dentro do cluster.
+
+- NodePort - Expõe o serviço sob a mesma porta em cada nó selecionado no cluster usando NAT. Faz o serviço acessível externamente ao cluster usando ``<NodeIP>:<NodePort>``. Superconjunto de ClusterIP.
+
+   ![alt text](./images/nodeport.png)
+
+  Em um cenario onde temos multipos pods com as mesmas labels o NodePort possui um algoritimo que seleciona o pod que recebera a requisição randomicamente caso não tenhamos um load balancer. 
+
+- LoadBalancer - Cria um balanceador de carga externo no provedor de nuvem atual ou cluster local (se suportado) e assinala um endereço IP fixo e externo para o serviço. Superconjunto de NodePort.
+
+- ExternalName - Expõe o serviço usando um nome arbitrário (especificado através de externalName na especificação spec) retornando um registro de CNAME com o nome. Nenhum proxy é utilizado. Este tipo requer v1.7 ou mais recente de kube-dns.
+
+
+
 
 
 
