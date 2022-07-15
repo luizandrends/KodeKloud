@@ -200,7 +200,27 @@ kubectl get services
 
 Linha de comando responsável pela listagem de todos os services
 
+---
+
+```
+kubectl create service nodeport <servicename> --tcp=<port>:<targetport> --dry-run=client -o yaml > <filename>.yaml
+```
+
+Linha de comando responsável por gerar um manifesto yaml do servico nodeport
+
+- A flag ``--dry-run=client`` garante que nada seja criado, somente mostra o output do manifesto gerado.
+
+- O operador de ``>`` representa o caminho da criação de um arquivo. Neste caso estamos recebendo um output de uma flag ``--dry-run=client`` e salvando em um arquivo .yaml
+
+  Assim podemos rodar um ``kubectl apply -f <filename>.yaml``
 ___
+```
+kubectl edit service <servicename>
+```
+
+Linha de comando para fazer a edição de um manifesto de um serviço NodePort.
+
+---
 
 ## Genneral
 
