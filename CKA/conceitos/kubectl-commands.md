@@ -170,6 +170,12 @@ Linha de comando responsável por gerar o manifesto YAML de criação de um depl
 
 - A flag ``--dry-run=client`` garante que nada seja criado, somente mostra o output do manifesto gerado.
 
+```
+kubectl set image deployment <deploymentname> <imagename>=<imageversion>
+```
+
+Cli responsável por editar a imagem de um deployment.
+
 ---
 
 ```
@@ -200,10 +206,26 @@ kubectl get services
 
 Linha de comando responsável pela listagem de todos os services
 
----
+```
+kubectl expose pod <podname> --type=NodePort --port=<port> --name=<servicename> --dry-run=client
+-o yaml > <filename>.yaml
+```
+Cli repsonsavel pela criação de um manifesto de serviço NodePort baseado em um pod
+
+- A flag ``--dry-run=client`` garante que nada seja criado, somente mostra o output do manifesto gerado.
+
+- O operador de ``>`` representa o caminho da criação de um arquivo. Neste caso estamos recebendo um output de uma flag ``--dry-run=client`` e salvando em um arquivo .yaml
+
+  Assim podemos rodar um ``kubectl apply -f <filename>.yaml``
+
+- Outra informação válida é que como informamos o nome do pod, o kubectl automaticamente usa as lables do pod como selector dentro do serviço.
+
+- Caso tenhamos de expor o campo ``nodePort`` é necessário fazer a alteração dentro do manifesto gerado.
 
 ```
-kubectl create service nodeport <servicename> --tcp=<port>:<targetport> --dry-run=client -o yaml > <filename>.yaml
+kubectl create service nodeport <servicename> --tcp=<port>:<targetport> 
+--node-port=<nodeportPort>
+--dry-run=client -o yaml > <filename>.yaml
 ```
 
 Linha de comando responsável por gerar um manifesto yaml do servico nodeport
@@ -213,12 +235,42 @@ Linha de comando responsável por gerar um manifesto yaml do servico nodeport
 - O operador de ``>`` representa o caminho da criação de um arquivo. Neste caso estamos recebendo um output de uma flag ``--dry-run=client`` e salvando em um arquivo .yaml
 
   Assim podemos rodar um ``kubectl apply -f <filename>.yaml``
-___
+
 ```
 kubectl edit service <servicename>
 ```
 
 Linha de comando para fazer a edição de um manifesto de um serviço NodePort.
+
+
+```
+kubectl expose pod <podname> --port=<port> --name <servicename> --dry-run=client -o yaml > <filename>.yaml
+```
+Cli responsavel pela criação de um serviço do tipo ClusterIP para uma exposição de porta.
+
+- A flag ``--dry-run=client`` garante que nada seja criado, somente mostra o output do manifesto gerado.
+
+- O operador de ``>`` representa o caminho da criação de um arquivo. Neste caso estamos recebendo um output de uma flag ``--dry-run=client`` e salvando em um arquivo .yaml
+
+  Assim podemos rodar um ``kubectl apply -f <filename>.yaml``
+
+- Outra informação válida é que como informamos o nome do pod, o kubectl automaticamente usa as lables do pod como selector dentro do serviço.
+
+```
+kubectl create service clusterip <servicename> --tcp=<port>:<portFowarding> --dry-run=client -o yaml > <filename>.yaml
+```
+
+Cli responsavel pela criação de um serviço do tipo ClusterIP para uma exposição de porta.
+
+- A flag ``--dry-run=client`` garante que nada seja criado, somente mostra o output do manifesto gerado.
+
+- O operador de ``>`` representa o caminho da criação de um arquivo. Neste caso estamos recebendo um output de uma flag ``--dry-run=client`` e salvando em um arquivo .yaml
+
+  Assim podemos rodar um ``kubectl apply -f <filename>.yaml``
+
+- Essa configuração automaticamente colocara o selector como ``app=<servicename>``.
+
+- É impotante ressaltar que devemos modificar o arquivo gerado conforme a necessidade.
 
 ---
 
