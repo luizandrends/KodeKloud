@@ -222,6 +222,39 @@ Linha de comando para fazer a edição de um manifesto de um serviço NodePort.
 
 ---
 
+## Namespaces
+
+```
+kubectl get namespaces
+```
+
+Linha de comando responsável por listar todas as namespaces dentro do cluster
+
+
+```
+kubectl create namespace <namespacename>
+```
+
+Linha de comando responsável pela criação de uma namespace.
+
+```
+kubectl config set-context $(kubectl config current-context) --namespace=<namespacename>
+```
+
+Cli para configurar o contexto para a namespace desejada.
+
+- Extremamente útil quando nao possuímos o comando ``kubens``
+
+- Também é util para não precisarmos utilizar o comando -n ou --namespace para todos os comandos.
+
+```
+kubectl get pods --all-namespaces
+```
+
+Cli responsável pela listagem de todos os pods em todas as namespaces.
+
+---
+
 ## Genneral
 
 ```

@@ -168,6 +168,20 @@ Embora cada Pod tenha um endereço IP único, estes IPs não são expostos exter
 - LoadBalancer - Cria um balanceador de carga externo no provedor de nuvem atual ou cluster local (se suportado) e assinala um endereço IP fixo e externo para o serviço. Superconjunto de NodePort.
 
 - ExternalName - Expõe o serviço usando um nome arbitrário (especificado através de externalName na especificação spec) retornando um registro de CNAME com o nome. Nenhum proxy é utilizado. Este tipo requer v1.7 ou mais recente de kube-dns.
+---
+
+## NAMESPACES
+
+Namespaces ajudam diferentes projetos, times ou clentes a compartilhar um cluster.
+
+Por padrão o K8s cria algumas namespaces na criação do cluster.
+
+- Dentro das namespaces, podemos criar politicas separadament, assim, limitando o uso de recursos por namespace e etc.
+
+- Dentro da mesma mamespace, os recursos conseguem acessar uns aos outros utilizando somente o nome.
+
+- Para recursos que se encontram em outras namespaces, é necessario acessar via url no seguinte formato:
+  ``<servicename>.<namespace>.svc.cluster.local``
 
 
 
