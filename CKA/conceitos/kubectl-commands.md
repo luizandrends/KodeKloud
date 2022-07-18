@@ -322,3 +322,33 @@ kubectl get all
 Linha de comando responsável pela listagem de todos os componentes
 
 - Caso não seja informado a namespace ``-n <namespacename>`` o kubectl irá buscar dentro da namespace default
+
+---
+
+## Taint
+
+```
+kubectl taint nodes <nodename> key=value:tainteffect
+```
+
+Linha de comando responsavel por criar um taint em um node específico.
+É importante ressaltar que existem 3 tipos de ``tainteffect``
+
+- <strong>NoSchedule:</strong> Não será possível criar um pod no node
+
+- <strong>PreferNoSchedule:</strong> O scheduler tentará não alocar o pod no node, porém não existem garantias
+
+- <strong>NoExecute:</strong> Se existe pelo menos um taint não tolerado com o efeito NoExecute, o pod será expulso do nó (caso já esteja em execução) e não será alocado ao nó (caso ainda não esteja em execução).
+
+```
+kubectl describe node <nodename> | grep Taints
+```
+Linha de comando responsavel por listar as ``Taints`` de um node.
+
+## Node Selectors
+
+```
+kubectl label nodes <nodename> label-key=label-value
+```
+
+Linha de comando responsável por criar label nos nodes.

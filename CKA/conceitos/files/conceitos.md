@@ -55,3 +55,68 @@ Tratando-se em nível de POD, basicamente quando criamos uma toleration, devemos
 Podemos ter vários tipos de taint no mesmo nó e é interessante prestarmos atenção ao executarmos a tarefa.
 
 Outro exemplo muito interessante é o node ControlPlane. Podemos nos perguntar, porque o scheduler não cria nenhum POD dentro do ControlPlane? A resposta é: Pois quando a criação do cluster acontece, é aplicado um ``Taint`` no node e não conseguimos subir nenhum outro pod/deployment/service/etc... dentro do mesmo.
+
+## Node Selectors
+
+O Node Selector é a recomendação mais simples de seleção de nodes para a criação de pods. Você consegue adicionar o campo ``nodeSelector`` no YAML do seu POD e referenciar esse valor nas lables do node que você deseja utilizar como alvo para a criação do POD. O Kubernetes somente faz schedule do POD nos nodes que tiverem cada uma das lables especificadas.
+
+Como vários objetos do Kubernetes, os nodes também possuem labels! Você pode criar labels manualmente. O K8s também popula um set padrão de labels em todos os nodes em um cluster.
+
+## Node Affinity
+Node Affinity é conceitualmente similar ao nodeSelector, permitiondo você restringir quais nodes o seu POD pode ter um schedule baseado nas Node labels.
+Existem 2 tipos de afinidade:
+
+- *requiredDuringSchedulingIgnoredDuringExecution:* O Scheduler não consegue fazer schedule do POD a menos que a regra conicida. Essa função é bem parecida com o nodeSelector, porém, tem uma complexidade um pouco mais expressiva.
+
+- *preferredDuringSchedulingIgnoredDuringExecution:* O Scheduler tenta encontrar um node que conicida com as regras especificadas. Se um node coincidente for encontrado e ele não estiver disponível, o scheduler mesmo assim faz o schedule do POD.
+
+É importante cidtar o uso dos operadores lógicos disponíveis. Aqui estão eles:
+
+``In``, ``NotIn``, ``Exists``, ``DoesNotExist``, ``Gt`` e ``Lt``
+
+O ``NotIn`` e ``DoesNotExist`` servem para o fazer o anti-affinity. Essa funcionalidade é muito parecida com o ``Taint``, que foi mencionado no tópico anterior.
+
+- *In:* Quando nosso nodeAffinity estiver configurado com o operador In, o Scheduler irá buscar por varios nodes, não somente um, ex:
+
+podemos ter:
+
+```yaml
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: size
+            operator: In
+            values:
+            - Large
+```
+
+e também podemos ter:
+
+```yaml
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: size
+            operator: In
+            values:
+            - Large
+            - Medium
+```
+
+Podemos comparar com o operador lógico OU. Se o Scheduler encontrar um node com a label size e o valor Large ou Medium, ele irá alocar o POD no NODE mais condizente com a situação, sem se preocupar com o valor da label.
+
+- *Exists:* Busca somente pelo valor da label e não pelo valor, se o node possuir uma label condizente o Scheduler irá prosseguir com o Schedule.
+
+```yaml
+    affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: size
+            operator: Exists
+```
