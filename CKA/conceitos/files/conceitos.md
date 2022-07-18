@@ -28,4 +28,30 @@
   Como podemos perceber o campo ports é um array, logo, podemos ter mais de uma configuração.
 
   É importante ressaltar que o objeto de referência (POD, Deployment, ReplicaSet e etc...) tenha as labels definidas para conseguirmos fazer o attatch do serviço.
+---
 
+## Annotations
+
+São parecidas com as lables, porém tem o uso designado para algo mais voltado a integração (buildVersion, ingress e etc).
+
+## Taints e Tolerations
+
+Taints são aplicados nos nodes, eles permitem que um node repudie um conjunto de pods.
+
+Tolerations são aplicada em pods e permitem, mas não exigem que os pods sejam alocados em nós com taints correspondentes
+
+Podemos imaginar um cenário, pode somente entrar na sala secreta quem possuir um cartão de acesso 3. Quem possuir um cartão de acesso 2, talvez consiga entrar, mas não é garantido e quem possuir um cartão de acesso 1, não vai conseguir entrar na sala. Os que ja estiverem dentro e possuirem um cartão de acesso 1, serão expulsos.
+
+Nesse exemplo citado a sala secreta seria um Node, máquina de leitura de cartão seria a ``Taint`` e o nivel de acesso do cartão seria uma ``Toleration``.
+
+Possuimos 3 tipos de taint:
+
+- NoSchedule: O Kubernetes não alocará o pod naquele nó.
+- PreferNoSchedule: O Kubernetes tentará não alocar o pod no nó.
+- NoExecute: O pod será expulso do nó (caso já esteja em execução) e não será   alocado ao nó (caso ainda não esteja em execução).
+
+Tratando-se em nível de POD, basicamente quando criamos uma toleration, devemos pensar ao contrário, como se fosse uma imunização, ou seja, se o node possuir uma Taint de ``NoSchedule`` e o POD uma Toleration de ``NoSchedule``, logo, esse pod poderá ser alocado dentro do node com a Taint.
+
+Podemos ter vários tipos de taint no mesmo nó e é interessante prestarmos atenção ao executarmos a tarefa.
+
+Outro exemplo muito interessante é o node ControlPlane. Podemos nos perguntar, porque o scheduler não cria nenhum POD dentro do ControlPlane? A resposta é: Pois quando a criação do cluster acontece, é aplicado um ``Taint`` no node e não conseguimos subir nenhum outro pod/deployment/service/etc... dentro do mesmo.

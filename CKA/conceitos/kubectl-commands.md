@@ -49,7 +49,13 @@ kubectl get pods
 Linha de comando responsável por listar todos os pods dentro de uma namespace
 
 - Caso não seja informado a namespace ``-n <namespacename>`` o kubectl irá buscar dentro da namespace default
-___
+
+```
+kubectl get pods --selector key=value
+```
+Linha de comando responsável por listar todos os pods dentro de uma namespace pela sua label.
+
+- Caso não seja informado a namespace ``-n <namespacename>`` o kubectl irá buscar dentro da namespace default
 
 ```
 kubectl describe pod <podname>
