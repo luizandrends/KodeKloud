@@ -120,3 +120,46 @@ Podemos comparar com o operador lógico OU. Se o Scheduler encontrar um node com
           - key: size
             operator: Exists
 ```
+
+## DaemonSet
+
+Um DaemonSet garante que todos os Nodes (Ou alguns) rodem uma copia dos pods.
+
+Casos de uso para os DaemonSets
+
+- Quando queremos ter algum tipo de monitoramento fixo dentro do nosso node sem que ele se renove a cada deploy
+
+- Quando queremos ter algum tipo de captura de log fixo dentro do nosso node
+
+- O componente Kube-proxy pode ser deployado como um daemonset
+
+## Static Pod
+
+São gerenciados diretamente pelo kubelet em um node específico, sem o API Server. Diferente dos pods que são gerenciados pelo Control Plane o kubelet cuida de cada POD dentro do node e caso eles falhem ele os restarta.
+
+O Kubelet automaticamente tenta criar um mirror Pod no Api Server para cada POD Estatico. Isso significa que os pods rodam em um node onde o API Server consegue enxerga-los, porém não podem ser controlados.
+
+É importante mencionar que os arquivos YAML devem ser criados dentro de ``/etc/kubernetes/manifests`` que é onde o kubelet ira buscar pelos arquivos de especificação.
+
+- Podemos utilizar os PODS estáticos para criarmos um Control Plane dentro de um Node. Em um cenário onde ja possuímos algum cluster pré-configurado, podemos em um futuro, necessitar de mais de um Control Plane então podemos criar um Node novo e dentro dele, gerar vários manifestos com os componentes do kubernetes dentro do diretório citado acima. Desta maneira não precisamos configurar um Node Control Plane do 0.
+
+- Os pods estaticos tem a nomenclatura do tipo
+  ``nomedopod``-``nomedonode``
+
+- Outro ponto de extrema importância é sempre olhar qual é o caminho de configuração dentro do kubelet para os manifestos YAML. Para conseguirmos ver essa conf  basta executar um cat neste caminho ``/var/lib/kubelet/config.yaml``
+
+## Metrics Server
+
+Por padrão o k8s não vem com nenhuma configuração de analise de métricas. Temos a necessidade de instalar
+
+```
+minikube addons enable metrics-server
+```
+
+```
+git clone https://github.com/kodekloudhub/kubernetes-metrics-server.git
+```
+
+```
+kubectl create -f deploy/1.8+/
+```

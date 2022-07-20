@@ -176,12 +176,6 @@ Linha de comando responsável por gerar o manifesto YAML de criação de um depl
 
 - A flag ``--dry-run=client`` garante que nada seja criado, somente mostra o output do manifesto gerado.
 
-```
-kubectl set image deployment <deploymentname> <imagename>=<imageversion>
-```
-
-Cli responsável por editar a imagem de um deployment.
-
 ---
 
 ```
@@ -323,6 +317,20 @@ Linha de comando responsável pela listagem de todos os componentes
 
 - Caso não seja informado a namespace ``-n <namespacename>`` o kubectl irá buscar dentro da namespace default
 
+```
+kubectl get events
+```
+
+Linha de comando responsável pela listagem de todos os eventos dentro da namespace
+
+- Caso não seja informado a namespace ``-n <namespacename>`` o kubectl irá buscar dentro da namespace default
+
+```
+kubectl set image deployment <deploymentname> <imagename>=<imageversion>
+```
+
+Cli responsável por editar a imagem de um deployment.
+
 ---
 
 ## Taint
@@ -352,3 +360,44 @@ kubectl label nodes <nodename> label-key=label-value
 ```
 
 Linha de comando responsável por criar label nos nodes.
+
+## Metrics Server
+
+```
+kubectl top nodes
+```
+
+Linha de comando responsável por trazer as metricas atuais dos nodes.
+
+---
+
+## Rollout
+
+```
+kubectl rollout status deployment/<deploymentname>
+```
+
+Linha de comando para verificar o status de um rollout dentro do seu deployment.
+Caso o rollout tenha sido propagado com sucesso para todos os pods do deployment você deverá receber uma mensagem nesse sentido ``deployment "nginx" successfully rolled out``.
+
+```
+kubectl rollout history deployment/<deploymentname>
+```
+Linha de comando responsável pela listagem do histórico de rollouts de um deployment.
+
+```
+kubectl rollout history deployment/<deploymentname> --revision=<revisionNumber>
+```
+Linha de comando responsável pelo detalhamento de uma revisão de um rollout.
+
+```
+kubectl rollout undo deployment/<deploymentName>
+```
+Linha de comando responsável pelo rollback do deployment para a ultima versão anterior a atual.
+
+```
+rollout undo deployment/<deploymentName> --to-revision=<revisionNumber>
+```
+Linha de comando responsável pelo rollback de um deployment para uma revisão em específico.
+
+
