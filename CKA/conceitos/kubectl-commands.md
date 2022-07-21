@@ -326,7 +326,7 @@ Linha de comando responsável pela listagem de todos os eventos dentro da namesp
 - Caso não seja informado a namespace ``-n <namespacename>`` o kubectl irá buscar dentro da namespace default
 
 ```
-kubectl set image deployment <deploymentname> <imagename>=<imageversion>
+kubectl set image deployment/<deploymentname> <imagename>=<imageversion>
 ```
 
 Cli responsável por editar a imagem de um deployment.
@@ -400,4 +400,65 @@ rollout undo deployment/<deploymentName> --to-revision=<revisionNumber>
 ```
 Linha de comando responsável pelo rollback de um deployment para uma revisão em específico.
 
+---
 
+## ConfigMap
+
+```
+kubectl create configmap <configmapname> --dry-run=client -o -yaml > <filename>.yaml
+```
+
+Cli responsável por gerar um manifesto no formato de um configmap
+
+- A flag ``--dry-run=client`` garante que nada seja criado, somente mostra o output do manifesto gerado.
+
+- O operador de ``>`` representa o caminho da criação de um arquivo. Neste caso estamos recebendo um output de uma flag ``--dry-run=client`` e salvando em um arquivo .yaml
+
+  Assim podemos rodar um ``kubectl apply -f <filename>.yaml``
+
+- É impotante ressaltar que devemos modificar o arquivo gerado conforme a necessidade.
+
+```
+kubectl create configmap \      
+  app-config --from-literal=APP_COLOR=blue \
+  --from-literal=APP_MOD=prod \
+  --from-literal=APP_DB=example
+```
+
+Linha de comando responsável por criar um configmap de maneira imperativa.
+
+```
+kubectl create configmap \
+  app-config --from-literal=APP_COLOR=blue \
+--from-literal=APP_MOD=prod --dry-run=client -o yaml > teste.yaml
+```
+Linha e comando responsável por gerar o manifesto de um configmap de maneira imperativa.
+
+---
+
+## Secrets
+
+```
+kubectl create secret generic
+```
+
+Linha de comando para criar um secret.
+
+```
+kubectl create secret generic \
+  app-secret --from-literal=DB_HOST=mysql --dry-run=client -o yaml > <yourfile>.yaml
+```
+Linha e comando responsável por gerar o manifesto de um secret de maneira imperativa.
+
+```
+echo -n 'valor' | base64
+```
+
+Linha de comando para gerar um Base64 (Formato requerido no momento de criar um secret)
+
+
+```
+echo -n 'hash' | base64 --decode
+```
+
+Linha de comando para fazer o decode de um secret em base64

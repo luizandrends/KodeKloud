@@ -163,3 +163,23 @@ git clone https://github.com/kodekloudhub/kubernetes-metrics-server.git
 ```
 kubectl create -f deploy/1.8+/
 ```
+
+## Roling Update
+
+Usuários tem a expectativa da aplicação sempre estar no ar sem nenhum tipo de downtime e desenvolvedores também tem a expectativa de lançar novas versões muitas vezes ao dia. No Kubernetes isso é feito com os rolling updates. Rolling Updates permitem que os Deployments atualizem seus pods sem nenhum tipo de downtime atualizando incrementalmente instâncias de pods com novas. Os PODS vão sofrer o scheduling em Nodes com recirsos disponíveis.
+
+
+## ConfigMaps
+
+Um ConfigMap é um objeto da API usado para armazenar dados não-confidenciais em pares chave-valor. Pods podem consumir ConfigMaps como variáveis de ambiente, argumentos de linha de comando ou como arquivos de configuração em um volume.
+
+Um ConfigMap ajuda a desacoplar configurações vinculadas ao ambiente das imagens de contêiner, de modo a tornar aplicações mais facilmente portáveis.
+
+## Secrets
+
+São objetos com o mesmo segmento do ConfigMap porém visando a encriptação de dados que não podem ser expostos públicamente.
+
+Dentro do container é criado um arquivo no caminho:
+``/opt/app-secret-volumes/<nomedosecret>``
+
+
