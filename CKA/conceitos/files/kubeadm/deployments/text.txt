@@ -1,2 +1,0 @@
-k label node ip-192-168-27-6.ec2.internal node_number=node1
-k label node ip-192-168-37-149.ec2.internal node_number=node2

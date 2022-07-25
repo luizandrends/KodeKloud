@@ -230,37 +230,6 @@ A terceira estratégia é criar novos nodes em versões novas e decomissionando 
 
 Quando fazemos o update de um node, não veremos imediatamente a alteração na versao quando rodarmos o ``kubectl get nodes``, pois é listado a versão do kubelet. Para conseguimos enxergar esse update, é necessário fazer a atualização do kubelet.
 
-### Manutenção
-
-1 - Verificar a versão disponível do ``kubeadm``
-
-2 - Fazer do update ``kubeadm`` no ``control-plane``
-
-3 - Fazer o update do ``kubelet``
-
-4 - Verificar a versão do ``control-plane``
-
-5 - Atualiza o node config do ``control-plane``
-
-6 - Rodar o comando ``systemctl``
-
-7 - Mover os workloads dentro do node desejado ``drain``
-
-8 - Verificar se o node está ``uneschedulable``
-
-9 - Fazer o update do ``kubeadm`` no ``worker-node`` desejado
-
-10 - Fazer o update do ``kubelet`` no ``worker-node`` desejado
-
-11 - Verificar a versão do ``worker-node``
-
-12 - Atualiza o node config do ``kubelet-version``
-
-13 - Rodar o comando ``systemctl``
-
-14 - Rodar o comando de ``uncordon`` para retornar o node ao estado de ``schedulable``
-
-
 
  ## Disruptions 
  
