@@ -190,13 +190,67 @@ Caso um node sofra um downtime, os pods ficarão indisponíveis. Se um node volt
 
 O ``pod-eviction-timeout`` é responsável por definir o tempo máximo de espera para um node que esta indisponível, ou seja, caso o tempo definido seja 10 minutos, o node control-plane vai esperar 10 minutos para considerar o Worker Node morto.
 
+Para configurarmos o eviction timeout é necessário informar ao controller manager a configuração
+
+```
+kube-controller-manager --pod-eviction-timeout=5m0s
+```
+
+
+
 Quando o node indisponível volta a ser disponível, ele sobe sem nenhum pod dentro dele, pois os pods que antes estavam dentro dele foram criados em outro Worker Node.
 
 É importante ressaltar que os pods que não são fazem parte de nenhum replicaset não serão recriados em nenhum dos nodes, ou seja, eles morreram e não vão mais voltar a vida. Será necessário fazer o redeploy dos mesmos.
 
 Para garantir que os seus workloads remanescentes continuem disponíveis durante uma manutenção, você pode configurar o PodDisruptionBudget.
 
-- *Disruptions:* Pods não desaparecem a menos que (uma pessoa ou um controller) destrua-os, ou exista algum tipo inevitavel de problema de hardware ou algum erro de softwara.
+É importante ressaltar que num cenário de manutenção nenhum dos controllers pode estar em versões acima do kube-apiserver. O Controller-manager e o kube-scheduler podem somente estar uma versão a menos que o kube-apiserver, o kubelet e kube-proxy podem somente estar duas versões abaixo do kube-apiserver.
+
+O kubectl pode estar 1 versão acima ou uma versão abaixo do kube-apiserver.
+
+O Kubernets dá suporte somente para as ultimas 3 versões, veja a foto abaixo para ter um entendimento melhor:
+
+![alt text](../images/kubernetes-versions.png)
+
+Pelos padrões de update não é aconselhavel fazer a atualização da versão v1.10 para a v1.13. É recomendado o update por versões, ou seja, v1.10 -> v1.11 -> v1.12 -> v1.13.
+
+Caso você esteja fazendo o update em um Cloud Provider como a GCP, AWS ou AZURE, você tem maneiras mais faceis de fazer o upgrade. Caso tenha provisonado o seu cluster, você pode utilizar o kubeadm  para fazer a atualização. Se você criou o seu k8s do 0 você o update é feito de componente para componente.
+
+### Kubeadm
+
+Quando entramos em um cenário de update, é importante começar pelo control-plane. O Node Control-Plane, vai ficar indisponível por algum tempo, porém isso não significa que os Nodes Workers não vão ficar indisponíveis. Como o control-plane estará inativo, não poderemos de maneira alguma acessar o control-plane ou os seus componentes, ou seja, não conseguiremos fazer deploys, remover deployments ou executar qualquer tipo de tarefa. Para caso mais extremos, caso um pod venha a falhar, esse pod não sofrerá um reschedule.
+
+Assim que a atualização se completar, o nosso control-plane voltará para o funcionamento com os seus componentes atualizados para a nova versão.
+
+Existem várias estrategias para o update dos worker nodes, a primeira delas é fazer o update de todos os worker nodes, porém, teremos um downtime durante a manutenção, o que é uma desvantagem significativa para a experiência do usuário. Assim que a o update completar, os pods vão ser alocados nos nodes normalmente.
+
+A outra estrategia, é fazer o upgrade graduativamente, ou seja, node por node ou grupos de nodes caso o tamanho do cluster seja grande. Primeiramente fazemos o upgrade do primeiro node, fazendo assim que os nossos workloads sejam transferidos para outros nodes. Assim que o node em manutenção terminar de atualizar, partimos para o segundo node e os workloads são transferidos para os outros nodes disponíveis e assim sucessivamente.
+
+A terceira estratégia é criar novos nodes em versões novas e decomissionando os nodes com versões antigas. Primeiramente é necessária a criação dos novos nodes e após essa tarefa, precisamos mover os workloads para esse novo node.
+
+Quando fazemos o update de um node, não veremos imediatamente a alteração na versao quando rodarmos o ``kubectl get nodes``, pois é listado a versão do kubelet. Para conseguimos enxergar esse update, é necessário fazer a atualização do kubelet.
+
+### Manutenção
+
+1 - Fazer do update ``kubeadm`` no ``control-plane``
+2 - Fazer o update do ``kubelet``
+3 - Verificar a versão do ``control-plane``
+4 - Atualiza o node config do ``control-plane``
+5 - Rodar o comando ``systemctl``
+6 - Mover os workloads dentro do node desejado ``drain``
+7 - Verificar se o node está ``uneschedulable``
+8 - Fazer o update do ``kubeadm`` no ``worker-node`` desejado
+9 - Fazer o update do ``kubelet`` no ``worker-node`` desejado
+10 - Verificar a versão do ``worker-node``
+11 - Atualiza o node config do ``kubelet-version``
+12 - Rodar o comando ``systemctl``
+13 - Rodar o comando de ``uncordon`` para retornar o node ao estado de ``schedulable``
+
+
+
+ ## Disruptions 
+ 
+ Pods não desaparecem a menos que (uma pessoa ou um controller) destrua-os, ou exista algum tipo inevitavel de problema de hardware ou algum erro de softwara.
 
   Chamamos esses casos de *involuntary disruptions* em uma aplicação.
   Citamos alguns exemplos abaixo:
@@ -226,6 +280,25 @@ Para garantir que os seus workloads remanescentes continuem disponíveis durante
   <strong>Cuidado:</strong> Nem todas as *voluntary disruptions* são restringidas pelo Pod Disruption Budget. Por exemplo, deletar um deployment ou pod, faz o bypass do Pod Disruption Budget.
 
   ### Lidando com disruptions
+
+  Aqui temos algumas maneiras de mitigar *involuntary disruptions*:
+
+  - Garantir que as requests do seu pod vai ter os recursos necessários.
+  - Replicação de apicação caso você necessite uma disponibilidade mais alta.
+  - Para uma disponibilidade ainda mais alta, espalhe aplicações ao longo de racks ou zonas.
+
+  A frequencia de *voluntary disruptions* varia. Em um pequeno cluster não existem automações para *voluntary disruptions* (somente disparadas por usuarios).
+
+  De qualquer maneira, o seu administrador do cluster ou provider talvez rode alguns serviços adicionais que causarão várias *voluntary disruptions*. Tambe1m algumas implementações de autoscaling do cluster (node) podem causar algum tipo de *voluntary disruptions*. Por exemplo, fazer o rollout de updates de software de nodes pode causar uma *voluntary disruptions* para a defragmentação de um node compacto. É importante ter documentado todos os tipos de *disruptions*. Algumas opções de configuração como PriorityClasses na especificação do seu pod, podem causar disrupções voluntarias e invlountarias.
+
+
+## Pod disruption budget
+
+O Kubernetes oferece features para rodar aplicações de alta disponibilidade mesmo quando introduzido fequentes *voluntary disruptions*.
+
+Como um dono de aplicação, voce2 pode criar o PodDisruptionBudget para cada aplicação. O PDB limita o numero de pods de uma aplicação replicada que está indisponivel simultaniamente de *disrupções voluntarias*. Por exemplo, uma aplicação baseada em quorum, o PDB garante que o numero de replicas rodando numca vai ser abaixo de um numero. Um front end web talvez precise garantir que um numero de replicas não fique abaixo de uma certa porcentagem.
+
+Por exemplo, o ``kubectl drain`` permite que você marque um node que vai sair de serviço. QUando você roda o comando, a ferramenta tenta despejar todos os pods no Node que voce2 esta tirando de serviço. A requisição de despejo que é submetida, talvez seja temporariamente rejeitada, enta2o a ferramenta periodicamente faz novas tentativas para todas as requests que falharam ate1 que todos os Pods do node alvo sejam destruidas, ou até que o timeout configurado seja alcançado.
 
 
 
