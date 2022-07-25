@@ -10,4 +10,4 @@ spec:
     - containerPort: 8080
     env:
     - name: APP_COLOR
-      value: pink
+      value: pinkka

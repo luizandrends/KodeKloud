@@ -182,4 +182,50 @@ São objetos com o mesmo segmento do ConfigMap porém visando a encriptação de
 Dentro do container é criado um arquivo no caminho:
 ``/opt/app-secret-volumes/<nomedosecret>``
 
+## Cluster Maintenance
+
+Caso um node sofra um downtime, os pods ficarão indisponíveis. Se um node voltar a vida imediatamente, o kubernetes volta a fazer o processamento imediatamente, entretanto, se o node morrer por mais de 5 minutos, os pods são exterminados desse node, se os pods forem parte de uma replicaset, eles são criados dentro de outros nodes.
+
+É importante ressaltar que para garantirmos que isso não aconteça, devemos criar deployments para que nesses tipos de cenário os pods do replicaSet sejam recriados em algum outro node.
+
+O ``pod-eviction-timeout`` é responsável por definir o tempo máximo de espera para um node que esta indisponível, ou seja, caso o tempo definido seja 10 minutos, o node control-plane vai esperar 10 minutos para considerar o Worker Node morto.
+
+Quando o node indisponível volta a ser disponível, ele sobe sem nenhum pod dentro dele, pois os pods que antes estavam dentro dele foram criados em outro Worker Node.
+
+É importante ressaltar que os pods que não são fazem parte de nenhum replicaset não serão recriados em nenhum dos nodes, ou seja, eles morreram e não vão mais voltar a vida. Será necessário fazer o redeploy dos mesmos.
+
+Para garantir que os seus workloads remanescentes continuem disponíveis durante uma manutenção, você pode configurar o PodDisruptionBudget.
+
+- *Disruptions:* Pods não desaparecem a menos que (uma pessoa ou um controller) destrua-os, ou exista algum tipo inevitavel de problema de hardware ou algum erro de softwara.
+
+  Chamamos esses casos de *involuntary disruptions* em uma aplicação.
+  Citamos alguns exemplos abaixo:
+  - Alguma falha de hardware na maquina física fazendo o node ficar indisponível
+  - Remoção da instância pelo administrador do cluster
+  - Falha no Cloud Provider ou no Hypervisor fazendo a instância desaparecer
+  - Alguma pane no kernel
+  - Node desaparecendo do cluster devido a alguma partição de rede
+  - Despejo de um pod devido ao node ficar sem recursos de memória ou cpu.
+
+  Em excessão ao caso que o node fica sem recursos, a maioria dessas situações devem ser familiares para grande parte dos usuarios; Não são tão específicos no Kubernetes.
+
+  Chamamos os outros casos de *voluntary disruptions*. Esses casos incluem ambas as ações iniciadas pelos donos da aplicação em sí e pelos mantenedoers do Cluster.
+
+  Ações típicas de um dono de uma aplicação:
+  - deletar o deployment ou algum controller que gerencie o pod
+  - update do template do pod causando um restart
+  - deletar um pod diretamente (intencionalmente ou acidentalmente)
+
+  Ações tipicas de um administrador de cluster:
+  - Drain de um node para fins de manutenção
+  - Drain de um node para escalar um cluster pra baixo e diminuir o seu tamanho
+  - Remover um pod de um node para permitie que alguem crie um deployment, replicaset ou ate1 mesmo um pod no lugar do que foi removido.
+
+  Essas ações podem ser diretamente tomadas pelo administrador do cluster, ou algima automação rodada pelo administrador do cluster, ou também pelo Cloud Provider
+
+  <strong>Cuidado:</strong> Nem todas as *voluntary disruptions* são restringidas pelo Pod Disruption Budget. Por exemplo, deletar um deployment ou pod, faz o bypass do Pod Disruption Budget.
+
+  ### Lidando com disruptions
+
+
 
