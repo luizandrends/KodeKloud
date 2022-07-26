@@ -4,7 +4,7 @@
 ## Salvando snapshod com o etcdctl
 
 ```
-etcdctl \ snapshot save <file-path>.db
+etcdctl snapshot save <file-path>.db
 ```
 Linha de comando responsável por tirar um snapshot do atual ETCD e salvar no diretório atual.
 
@@ -15,7 +15,7 @@ Linha de comando responsável por tirar um snapshot do atual ETCD e salvar no di
 ## Verificação do status do snapshot
 
 ```
-etcdctl \ snapshot status <file-path>.db
+etcdctl snapshot status <file-path>.db
 ```
 
 ---
@@ -27,7 +27,8 @@ service kube-apiserver stop
 ```
 
 ```
-etcdctl \ snapshot restore <file-path>.db --data-dir /var/lib/<backup-path>
+etcdctl --data-dir /var/lib/<backup-path> \ 
+snapshot restore <file-path>.db 
 ```
 
 ```
@@ -48,6 +49,22 @@ Comandos responsáveis por restaurar um ETCD baseado em um snapshot
 - É importante ressaltar que precisamos ajustar o caminho configurado no 
 etcd.service alterando o campo ``data-dir=/var/lib/<backup-path>``
 
+- Também é importante alterar dentro do campo volumes o hostPath para referenciar o arquivo do volume do container.
+
+````yaml
+    volumeMounts:
+    - mountPath: <data-dir-path>
+      name: etcd-data
+````
+
+````yaml
+  volumes:
+  - hostPath:
+      path: <data-dir-path>
+      type: DirectoryOrCreate
+    name: etcd-certs
+````
+
 - Após o procedimento precisamos reiniciar o daemon, etcd e o kube-apiserver
 
 ---
@@ -55,12 +72,26 @@ etcd.service alterando o campo ``data-dir=/var/lib/<backup-path>``
 ## Comando com endpoint, certificado ca, certificado do etcd e etcd key
 
 ```
-snapshot save <your-path>.db \
+etcdctl snapshot save <your-path>.db \
 --endpoints=https://127.0.0.1:2379 \
 --cacert=/etc/etcd/ca/crt \
 --cert=/etc/etcd/etcd-server.crt \
 --key=/etc/etcd/etcd-server.key
 ```
+---
+
+## Verificação da versão do ETCD
+
+```
+cd /etc/kubernetes/manifests
+```
+
+```
+cat etcd.yaml
+```
+
+Linhas de comando para verificar o manifesto do ETCD.
+
 ---
 
 # Tutorial ETCDCTL
