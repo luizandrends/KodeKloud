@@ -331,6 +331,12 @@ kubectl set image deployment/<deploymentname> <imagename>=<imageversion>
 
 Cli responsável por editar a imagem de um deployment.
 
+```
+kubectl get all --all-namespacess -o yaml > <filename>.yaml
+```
+
+Linha de comando responsável por gerar um manifesto de todos os objetos criados em todas as namespaces do cluster.
+
 ---
 
 ## Taint

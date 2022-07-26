@@ -232,7 +232,7 @@ Quando fazemos o update de um node, não veremos imediatamente a alteração na 
 
 
  ## Disruptions 
- 
+ cons
  Pods não desaparecem a menos que (uma pessoa ou um controller) destrua-os, ou exista algum tipo inevitavel de problema de hardware ou algum erro de softwara.
 
   Chamamos esses casos de *involuntary disruptions* em uma aplicação.
@@ -283,5 +283,24 @@ Como um dono de aplicação, voce2 pode criar o PodDisruptionBudget para cada ap
 
 Por exemplo, o ``kubectl drain`` permite que você marque um node que vai sair de serviço. QUando você roda o comando, a ferramenta tenta despejar todos os pods no Node que voce2 esta tirando de serviço. A requisição de despejo que é submetida, talvez seja temporariamente rejeitada, enta2o a ferramenta periodicamente faz novas tentativas para todas as requests que falharam ate1 que todos os Pods do node alvo sejam destruidas, ou até que o timeout configurado seja alcançado.
 
+## Backup - Resource Configs
+
+Existem várias maneiras de se criar objetos dentro do k8s, de maneira imperativa e declarativa, é importante sempre ter em mente que precisamos manter os arquivos em algum tipo de armazenamento de código como o GitHub, para caso o cluster venha a ficar indisponível tenhamos esses objetos armazenados de maneira adequada para fazer a recriação dos mesmos.
+
+Existem tecnologias que ajudam a fazer o backup do seu cluster como a VELERO. Essa ferramenta faz todo o backup dos objetos dentro do seu cluster Kubernetes.
+
+### ETCD
+
+ETCD é uma fonte de armazenamento altamente disponível e consistente que se baseia no formato de chave e valor para todos os dados do cluster, ou seja, cada objeto que criarmos, o ETCD será responsável por armazenar as especificações dos mesmos.
+
+Se o seu cluster se utiliza do ETCD como maneira de armazenamento, certifique-se de que você tem alguma estratégia de backup para esses dados.\
+
+Como podemos perceber o ETCD é hosteado dentro dos Control Plane nodes e ele possui um caminho de configuração na hora de sua criação onde todos os dados de criação dos objetos serão armazenados.
+
+Segue abaixo a configuração:
+
+``--data-dir=/var/lib/etcd``
+
+É importante ressaltar que o ETCD possui uma ferramenta de snapshots onde podemos salvar constantes "estados" do ETCD.
 
 
