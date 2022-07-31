@@ -389,3 +389,5 @@ Existem várias maneiras de se autenticar dentro do kube-apiserver, citarei algu
   ```
   curl http://kube-apiserver:6443/api/v1/pods \ --key admin.key --cert admin.crt --cacert ca.crt
   ```
+
+## RBAC
