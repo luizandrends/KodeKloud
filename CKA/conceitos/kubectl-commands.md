@@ -337,6 +337,24 @@ kubectl get all --all-namespacess -o yaml > <filename>.yaml
 
 Linha de comando responsável por gerar um manifesto de todos os objetos criados em todas as namespaces do cluster.
 
+```
+kubectl config view
+```
+
+Linha de comando responsável por mostrar o arquivo de KubeConfig.
+
+```
+kubectl config use-context <context-name>
+```
+Linha de comando responsável por mudar o contexto (Cluster) que está acessando.
+
+
+```
+kubectl config --kubeconfig=<KubeConfigPath use-context <context>
+```
+
+Linha de comando responsável por mudar o contexto (Cluster) que está acessando baseado em um arquivo.
+
 ---
 
 ## Taint
@@ -468,3 +486,42 @@ echo -n 'hash' | base64 --decode
 ```
 
 Linha de comando para fazer o decode de um secret em base64
+
+## Certificados
+
+```
+kubectl get csr
+```
+
+Linha de comando responsável por listar todos os csr's
+
+---
+
+```
+kubectl certificate approve <nome-do-certificado>
+```
+Linha de comando responsável pelo approve de um csr
+
+---
+
+```
+kubectl get csr <csr-name> -o yaml
+```
+
+Linha de comando responsável por detalhar um csr em yaml.
+
+---
+
+```
+kubectl certificate deny <nome-do-csr>
+```
+
+Linha de comando responsável por recusar um csr
+
+---
+
+```
+kubectl delete csr <nome-do-csr>
+```
+
+Linha de comando responsável por deletar um csr

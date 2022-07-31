@@ -298,9 +298,94 @@ Se o seu cluster se utiliza do ETCD como maneira de armazenamento, certifique-se
 Como podemos perceber o ETCD é hosteado dentro dos Control Plane nodes e ele possui um caminho de configuração na hora de sua criação onde todos os dados de criação dos objetos serão armazenados.
 
 Segue abaixo a configuração:
-
+ 
 ``--data-dir=/var/lib/etcd``
 
 É importante ressaltar que o ETCD possui uma ferramenta de snapshots onde podemos salvar constantes "estados" do ETCD.
 
+## Segurança
 
+Todos os clusters de kubernetes tem duas categorias de usuarios: *Service Accounts*, gerenciadas pelo K8s e usuários normais.
+
+Podemos assumir que um serviço de cluster independente gerencia os usuários na seguinte maneira:
+
+ - Um adiministrador distribuindo chaves privadas
+ - Um usuário armazenado dentro de alguma cloud
+ - Uma lista de usuários e senhas dentro de um arquivo
+
+Neste caso, o kubernetes não possui nenhum objeto que represente usuarios normais e contas. Usuários normais nao podem ser adicionados em um cluster por uma chamada API.
+
+De uma maneira geral, um usuário normal não pode ser adicionado por uma chamada API, os usuários que possuirem um certificado válido assinado pelo CA, são considerados autenticados. Nessa configuração o Kubernetes determina o username.
+
+Tudo isso pode ser gerenciado pelo Role Based Access Control(RBAC) *sub-sytem* que determinará as ações que um determinado usuário poderá tomar.
+
+Todos os usuários são gerenciados pelo kube-apiserver, independentemente se estamos fazendo uma request via CURL ou buscando informações pelo kubectl.
+
+Existem várias maneiras de se autenticar dentro do kube-apiserver, citarei algumas abaixo:
+
+- Arquivo com a listagem de senhas estáticas (Não recomendado)
+  - Para fazer a criação de usuários nesse formato, precisamos ter um arquivo CSV contendo a senha, username e userId. É necessário fazer a configuração do kube-apiserver para o funcionamento desse tipo de autenticação. É necessário informar o ``--basic-auth-file=<csv-file>.csv`` dentro da configuração do service ``kube-apiserver.service``. Para as alterações fazerem efeito, é necessário reiniciar o kube-apiserver.
+  - Caso você tenha criado o seu cluster via Kubeadm, é necessário modificar o manifesto gerado pelo próprio Kubeadm.
+  - Para autenticar, é necessário informar o usuário na requisição dessa maneira:
+    ```
+    curl -v -k https://master-node-ip:6443/api/v1/pods -u "user:password"
+    ```
+  - No arquivo de usuários mencionado previamente, podemos ter uma coluna adicional especificando o grupo de cada usuário.
+
+  - Quando criamos o cluster com o Kubeadm, é necessário criar volumes para os arquivos
+
+- Arquivo com a listagem de tokens (Não recomendado)
+  - A autenticação com tokens funciona da mesma maneira que com usuários, a diferença é que em vez de utilizarmos a senha no arquivo csv, colocamos o token, e os campos de usuario, userId e grupo, permanecem os mesmos.
+  - Para a configuração da funcionalidade, precisamos informar o arquivo no campo token-auth-file. ``--token-auth-file=<csv-file>.csv``.
+  - Para autenticar, é necessário informar o token por meio de um header de autorização dessa maneira:
+  ```
+  curl -v -k https://master-node-ip:6443/api/v1/pods --header "Authorization: Bearer <TOKEN>"
+  ```
+  - Quando criamos o cluster com o Kubeadm, é necessário criar volumes para os arquivos
+
+- Certificados
+  - Precisamos gerar chaves publicas e privadas para todos os componentes do control plane e workers, para que eles consigam se comunicar com o kube-apiserver do k8s. Também é necessario criar o CA para fazer a assinatura desses certificados, geralmente existem 2 CA's para o cluster, um para o ETCD e outro para os demais, já que é somente o kube-apiserver tem acesso.
+
+  - Primeiramente geramos uma chave privada, podemos utilizar esse comando (Private key)
+    ```
+    openssl genrsa -out ca.key 2048
+    ```
+  - Com a chave privada podemos criar uma requisição de assinatura para a chave criada previamente. (Public Key)
+    ```
+    openssl req -new -key ca.key -subj "/CN=KUBERNETES-CA" -out ca.csr
+    ```
+  - Para gerar a assinatura especificamos a requisição de assinatura previamente gerada. (CA)
+    ```
+    openssl x509 -req -in ca.csr -signkey ca.key -out ca.crt
+    ```
+
+- Certificados de usuários administradores e não administradores
+  - Primeiramente geramos a chave privada
+  ```
+  openssl genrsa -out admin.key 2048
+  ```
+  - Depois geramos a chave pública e fazemos a requisição de assinatura
+  ```
+  openssl req -new -key admin.key -subj "/CN=kube-admin" -out admin.csr
+  ```
+  - E finalmente geramos a assinatura do certificado
+  ```
+  openssl x509 -req -in admin.csr -CA ca.crt -CAkey ca.key -out admin.crt
+  ```
+
+  - Para definirmos os grupos de usuários, podemos declarar dentro da requisição de assinatura uma especificação dentro da flag -subj
+
+  ```
+  openssl req -new -key admin.key -subj "/CN=kube-admin/O=system:masters" -out admin.csr
+  ```
+
+  - Nos casos de componentes precisamos incluir um prefixo na hora da requisição do CA, podemos tomar como exemplo o ``kube-scheduler``
+
+  ```
+  openssl req -new -key kube-scheduler.key -subj "/CN=system:kube-scheduler" -out kube-scheduler.csr
+  ```
+
+  - Para a utilização de certificados como usuário, podemos fazer uma request dessa maneira:
+  ```
+  curl http://kube-apiserver:6443/api/v1/pods \ --key admin.key --cert admin.crt --cacert ca.crt
+  ```

@@ -1,0 +1,12 @@
+apiVersion: certificates.k8s.io/v1
+kind: CertificateSigningRequest
+metadata:
+  name: akshay
+spec:
+  request:
+  signerName: kubernetes.io/kube-apiserver-client
+  usages:
+  - client auth
+
+# Comando para gerar um base64 de um .csr
+# cat file.csr | base64 -w 0
