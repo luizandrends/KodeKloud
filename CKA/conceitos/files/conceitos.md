@@ -390,4 +390,23 @@ Existem várias maneiras de se autenticar dentro do kube-apiserver, citarei algu
   curl http://kube-apiserver:6443/api/v1/pods \ --key admin.key --cert admin.crt --cacert ca.crt
   ```
 
+## Autorização
+
+Na inicialização do cluster, podemos é setado alguns tipos de modos de autorização, porém existem diversos outras maneiras de fazermos o gerenciamento de permissões.
+
+Para alterarmos essa configuração, precisamos acessar o manifesto do kube-api e alterar a flag ``--authorization-mode=``
+
+É importante ressaltar que dentro da flag ``--authorization-mode=`` podemos ter algumas maneiras de autenticação igual a esse exemplo:
+
+``--authorization-mode=Node,RBAC,Webhook``
+
+Caso o Node rejeite a requisição ela será encaminhada para o RBAC e se for recusada passará para o Webhook e assim sussetivamente.
+
+
 ## RBAC
+
+*Role-based Access Control* é um metodo de regulação de acesso para recursos computacionais ou de rede baseado em *roles* para usuários individuais dentro de uma organização.
+
+O RBAC utiliza o ``rbac.authorization.k8s.io`` API Group para dirigir a autorização, permitindo você a configurar dinamicamente politicas ao longo da API do Kubernets.
+
+![alt text](../images/RBAC.png)

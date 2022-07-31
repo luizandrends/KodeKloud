@@ -1,0 +1,16 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata: 
+  name: administrator-user-binding
+subjects:
+- kind: User
+  name: administrator-user
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: administrator
+  apiGroup: rbac.authorization.k8s.io
+
+
+   
+  
