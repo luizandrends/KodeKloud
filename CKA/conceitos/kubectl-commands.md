@@ -525,3 +525,56 @@ kubectl delete csr <nome-do-csr>
 ```
 
 Linha de comando responsável por deletar um csr
+
+---
+
+## Roles
+
+```
+kubectl get roles
+```
+
+Linha de comando responsável por listar todas as roles
+
+- Caso você não declare a flag ``--namespace=<minha-namespace>``, o kubectl buscará na namespace default
+
+---
+
+```
+kubectl describe role <nome-da-role>
+```
+
+Linha de comando responsável pelo detalhamento de uma role em específico
+
+- Caso você não declare a flag ``--namespace=<minha-namespace>``, o kubectl buscará na namespace default
+
+---
+
+```
+kubectl get rolebinding
+```
+
+Linha de comando responsável pela listagem de todas as role bindings.
+
+- Caso você não declare a flag ``--namespace=<minha-namespace>``, o kubectl buscará na namespace default
+
+---
+
+```
+kubectl describe rolebinding <nome-da-rolebinding>
+```
+
+Linha de comando responsável pelo detalhamento de uma rolebinding
+
+- Caso você não declare a flag ``--namespace=<minha-namespace>``, o kubectl buscará na namespace default
+
+---
+
+```
+kubectl auth can-i create <nome-do-objeto> --as <nome-do-subject>
+```
+Linha de comando para fazer a verificação da permissão das roles.
+
+- Podemos mudar o create para outras operações como ``get``,  ``describe`` e ``delete``
+
+- Caso você não declare a flag ``--namespace=<minha-namespace>``, o kubectl buscará na namespace default

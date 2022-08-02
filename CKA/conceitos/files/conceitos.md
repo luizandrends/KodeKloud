@@ -410,3 +410,7 @@ Caso o Node rejeite a requisição ela será encaminhada para o RBAC e se for re
 O RBAC utiliza o ``rbac.authorization.k8s.io`` API Group para dirigir a autorização, permitindo você a configurar dinamicamente politicas ao longo da API do Kubernets.
 
 ![alt text](../images/RBAC.png)
+
+## Service Account
+
+Quando criamos um pod, se não especificarmos um service account é automaticamente atribuido o default service account na mesma namespace. Se utilizarmos o comando ``kubectl describe pod <nome-do-pod>`` podemos ver que o ``spec.serviceAccountName`` foi setado automaticamente.
