@@ -578,3 +578,41 @@ Linha de comando para fazer a verificação da permissão das roles.
 - Podemos mudar o create para outras operações como ``get``,  ``describe`` e ``delete``
 
 - Caso você não declare a flag ``--namespace=<minha-namespace>``, o kubectl buscará na namespace default
+
+## Service Account
+
+```
+kubectl create serviceaccount <nome-da-conta>
+```
+
+Linha de comando responsável por criar um *Service Account*.
+
+- Caso você não declare a flag ``--namespace=<minha-namespace>``, o kubectl vai criar o objeto na namespace default
+
+---
+
+```
+kubectl get serviceaccount
+```
+
+Linha de comando responsável pela listagem de todos o s *Service Account*.
+
+- Caso você não declare a flag ``--namespace=<minha-namespace>``, o kubectl buscará na namespace default
+
+---
+
+```
+kubectl describe serviceaccount <nome-do-service-account>
+```
+
+Linha de comando responsável por detalhar um *Service Account* em específico
+
+- Caso você não declare a flag ``--namespace=<minha-namespace>``, o kubectl buscará na namespace default
+
+---
+
+```
+kubectl describe secret <service-account-token>
+```
+
+Linha de comando responsável por mostrar o token de um service account.

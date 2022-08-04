@@ -413,4 +413,20 @@ O RBAC utiliza o ``rbac.authorization.k8s.io`` API Group para dirigir a autoriza
 
 ## Service Account
 
-Quando criamos um pod, se não especificarmos um service account é automaticamente atribuido o default service account na mesma namespace. Se utilizarmos o comando ``kubectl describe pod <nome-do-pod>`` podemos ver que o ``spec.serviceAccountName`` foi setado automaticamente.
+Quando você (um humano) acessa o cluster (por exemplo, utilizando o kubectl), você está autenticado pelo apiserver como um *User Account* particular (Geralmente é o admin, a menos que o administrador tenha customisado o seu cluster.). Processos dentro em containers dentreo de pods, podem fazer requisições para o apiserver. Quando eles fazem, eles são autenticados como *particular Service Account* (por exemplo, default).
+
+Quando criamos um pod, se não especificamos nenhum *Service Account*, é automaticamente setado um valor padrão, neste caso o ``default``. Se executarmos o comando ``kubectl get pods/<nome-do-pod> -o yaml``, você pode perceber que o campo ``spec.serviceAccountName`` foi automaticamente preenchido.
+
+Você pode acessar a API diretamente de um pod utilizando automaticmente as credenciais do *Service Account* montado. As permissões da API de *Service Account*, dependem do plugin e politica de autorização em uso.
+
+Basicamente, um *Service Account* é uma conta dada para algum tipo de serviço performar alguma ação dentro do cluster, como alguma ferramenta de monitoramento, pipeline e etc...
+
+Podemos citar o Prometheus, que utiliza o *Service Account* para fazer um pool no kube-apiserver com a finalidade de reter as métricas de uso de CPU, memória e muitos outros dados.
+
+Digamos que desenvolvemos uma aplicação para fazer a listagem dos pods. Precisamos fazer uma chamada API para o kube-apiserver e buscar a listagem dos pods de 2 em 2 segundos. Para essa chamada ser feita, é necessário criar um *Service Account* com a finalidade de comunicação com API do K8S.
+
+Quando criamos um service account via kubectl pelo comando ``kubectl create serviceaccount <nome-do-service-account>``, é gerado um token automaticamente. Esse token deve ser utilizado pela aplicação externa quando for autenticar para fazer algum tipo de chamada API para o kube-apiserver. O token é armazenado como um secret, neste formado: ``nome-do-service-account-<hash>``
+
+Para vermos o token, precisamos executar o comando ``kubectl describe secret <nome-do-token-do-service-account>``
+
+Cada namespace possui o seu próprio *Service Account*
