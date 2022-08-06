@@ -1,3 +1,0 @@
-variable "filename" {
-  type = string
-}
