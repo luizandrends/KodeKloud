@@ -413,7 +413,7 @@ O RBAC utiliza o ``rbac.authorization.k8s.io`` API Group para dirigir a autoriza
 
 ## Service Account
 
-Quando você (um humano) acessa o cluster (por exemplo, utilizando o kubectl), você está autenticado pelo apiserver como um *User Account* particular (Geralmente é o admin, a menos que o administrador tenha customisado o seu cluster.). Processos dentro em containers dentreo de pods, podem fazer requisições para o apiserver. Quando eles fazem, eles são autenticados como *particular Service Account* (por exemplo, default).
+Quando você (um humano) acessa o cluster (por exemplo, utilizando o kubectl), você está autenticado pelo apiserver como um *User Account* particular (Geralmente é o admin, a menos que o administrador tenha customisado o seu cluster.). Processos dentro em containers dentro de pods, podem fazer requisições para o apiserver. Quando eles fazem, eles são autenticados como *particular Service Account* (por exemplo, default).
 
 Quando criamos um pod, se não especificamos nenhum *Service Account*, é automaticamente setado um valor padrão, neste caso o ``default``. Se executarmos o comando ``kubectl get pods/<nome-do-pod> -o yaml``, você pode perceber que o campo ``spec.serviceAccountName`` foi automaticamente preenchido.
 
