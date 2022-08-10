@@ -430,3 +430,17 @@ Quando criamos um service account via kubectl pelo comando ``kubectl create serv
 Para vermos o token, precisamos executar o comando ``kubectl describe secret <nome-do-token-do-service-account>``
 
 Cada namespace possui o seu próprio *Service Account*
+
+---
+
+## Network Policies
+
+Se você precisa ter um fluxo de controle de trafego em nível de IP ou port, você deve considerar a utilização do *Kubernetes NetworkPolicies* para aplicações em particular no seu cluster. *Network Policies* são aplicações construidas que permitem uma especificação de como um pod e permitido comunicar com varias entidades de rede. As *Network Policies* se aplicam em uma conexão de pod a pod.
+
+- *Ingress:* Um objeto que gerencia o acesso externo aos serviços em um cluster. O *Ingress* expõe as rotas HTTP e HTTPS de fora do cluster para os *services* dentro do cluster, Roteamento de trafego é decidido pelas regras definidas no recurso
+
+![alt text](../images/ingress.png)
+
+  Um ingress pode ser configurado para gerar URLS acessiveis, *load balance traffic*, e muitas outras funcionalidades. O *ingress controller* é responssavel pelo gerenciamento do objeto de *Ingress*, usualmente com um *load balancer*.
+
+  Um ingress não expõe arbitrariamente portas ou protocolos. A exposição de servicos é feita com os Services.

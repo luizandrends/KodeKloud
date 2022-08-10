@@ -616,3 +616,15 @@ kubectl describe secret <service-account-token>
 ```
 
 Linha de comando responsável por mostrar o token de um service account.
+
+---
+
+## Secure images
+
+```
+kubectl create secret docker-registry regcred \
+--docker-server=private-registry.io \
+--docker-username=registry-user \
+--docker-password=registry-password \
+--docker-email=registry-user@email.com \
+```
